@@ -8,8 +8,6 @@ class Config(object):
     return ''.join(random.choice(chars) for _ in range(size))
   SECRET_KEY = secret_generator()
 
-  DEBUG = False
-  TESTING = False
   BASEDIR = os.path.abspath(os.path.dirname(__file__)).rsplit('/', 1)[0]
 
   config = configparser.ConfigParser()
@@ -18,11 +16,19 @@ class Config(object):
     raise IOError("Must create config.ini in {}/conf/".format(BASEDIR))
 
   try:
-    # Import slack config
-    pass
+    SLACK_APP_ID = config.get("slack", 'app_id')
+    SLACK_BOT_UID = config.get("slack", 'bot_uid')
+    SLACK_ACCESS_TOKEN = config.get("slack", 'access_token')
+    SLACK_CHANNEL_ID = config.get("slack", 'channel_id')
+    SLACK_SIGNING_SECRET = config.get("slack", 'signing_secret')
+    SLACK_API_URL = config.get("slack", 'api_url')
   except Exception as e:
-    print("Error importing Slack configuration: {}".format(repr(e))
+    print("Error importing Slack configuration: {}".format(repr(e)))
+
+class Production(Config):
+  DEBUG = False
+  TESTING = False
 
 class Development(Config):
   DEBUG = True
-  TESTING = False
+  TESTING = True
