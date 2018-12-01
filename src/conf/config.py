@@ -21,14 +21,16 @@ class Config(object):
     SLACK_ACCESS_TOKEN = config.get("slack", 'access_token')
     SLACK_CHANNEL_ID = config.get("slack", 'channel_id')
     SLACK_SIGNING_SECRET = config.get("slack", 'signing_secret')
-    SLACK_API_URL = config.get("slack", 'api_url')
+    SLACK_API_BASE = config.get("slack", 'api_base')
   except Exception as e:
     print("Error importing Slack configuration: {}".format(repr(e)))
 
 class Production(Config):
+  ENV = "Production"
   DEBUG = False
   TESTING = False
 
 class Development(Config):
+  ENV = "Development"
   DEBUG = True
   TESTING = True
