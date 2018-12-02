@@ -40,3 +40,32 @@ TRIAGE_WEEKLY_MSG_ATTACHMENTS = [
     ]
   }
 ]
+TRIAGE_TIMESLOT_ATTACHMENTS = [
+  {
+    "fallback": "Choose a time slot:",
+    "title": "Choose a time slot:",
+    "callback_id": "signup_ts_selection",
+    "color": "#3AA3E3",
+    "attachment_type": "default",
+    "actions": [
+      {
+        "name": "1",
+        "text": "12:00 P.M. - 1:00 P.M.",
+        "type": "button",
+        "value": "1"
+      },
+      {
+        "name": "2",
+        "text": "1:00 P.M. - 2:00 P.M.",
+        "type": "button",
+        "value": "2"
+      },
+      {
+        "name": "3",
+        "text": "2:00 P.M. - 3:00 P.M.",
+        "type": "button",
+        "value": "3"
+      }
+    ]
+  }
+]

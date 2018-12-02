@@ -25,6 +25,28 @@ class Config(object):
   except Exception as e:
     print("Error importing Slack configuration: {}".format(repr(e)))
 
+  try:
+    DB_TYPE = config.get("db", 'type')
+    DB_USER = config.get("db", 'user')
+    DB_PASS = config.get("db", 'pass')
+    if DB_PASS != "":
+      DB_PASS = ":"+DB_PASS
+    
+    DB_HOST = config.get("db", 'host')
+    DB_PORT = config.get("db", 'port')
+    DB_NAME = config.get("db", 'name')
+    SQLALCHEMY_DATABASE_URI = "{0}://{1}{2}@{3}:{4}/{5}".format(
+                                DB_TYPE,
+                                DB_USER,
+                                DB_PASS,
+                                DB_HOST,
+                                str(DB_PORT),
+                                DB_NAME
+                              )
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+  except Exception as e:
+    print("Error importing DB configuration: {}".format(repr(e)))
+
 class Production(Config):
   ENV = "Production"
   DEBUG = False
