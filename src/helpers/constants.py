@@ -3,7 +3,7 @@ TRIAGE_WEEKLY_MSG_ATTACHMENTS = [
   {
     "fallback": "Choose a day or three",
     "title": "Choose a day or three",
-    "callback_id": "pickaday",
+    "callback_id": "signup_dow_selection",
     "color": "#3AA3E3",
     "attachment_type": "default",
     "actions": [

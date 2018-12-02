@@ -34,3 +34,19 @@ class SlackApi():
                'Authorization': "Bearer {}".format(self.API_TOKEN)}
     )
     return r.json()
+
+  def post_ephemeral_message(self, text, target_user_id, **kwargs):
+    targetUrl = "{}{}".format(self.API_BASE, "chat.postEphemeral")
+    payload = {
+      'channel': kwargs.get('channel_id', self.CHANNEL_ID),
+      'text': text,
+      'as_user': kwargs.get('as_user', False),
+      'attachments': kwargs.get('attachments', []),
+      'user': target_user_id
+    }
+    r = requests.post(targetUrl,
+      data=json.dumps(payload),
+      headers={'Content-Type': "application/json",
+               'Authorization': "Bearer {}".format(self.API_TOKEN)}
+    )
+    return r.json()
