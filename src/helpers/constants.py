@@ -49,22 +49,28 @@ TRIAGE_TIMESLOT_ATTACHMENTS = [
     "attachment_type": "default",
     "actions": [
       {
-        "name": "1",
+        "name": "{}1",
         "text": "12:00 P.M. - 1:00 P.M.",
         "type": "button",
-        "value": "1"
+        "value": "1",
       },
       {
-        "name": "2",
+        "name": "{}2",
         "text": "1:00 P.M. - 2:00 P.M.",
         "type": "button",
-        "value": "2"
+        "value": "2",
       },
       {
-        "name": "3",
+        "name": "{}3",
         "text": "2:00 P.M. - 3:00 P.M.",
         "type": "button",
-        "value": "3"
+        "value": "3",
+      },
+      {
+        "name": "{}4",
+        "text": "All blocks",
+        "type": "button",
+        "value": "4",
       }
     ]
   }

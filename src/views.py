@@ -1,5 +1,5 @@
-from src import app
-from src.helpers import slack, constants
+from src import app, db, models
+from src.helpers import slack, constants, messages, data_access
 
 from flask import request, Response, jsonify
 import sys
@@ -13,20 +13,30 @@ def main(meth=None):
   if requestJson:
     if requestJson.get('type', None) == "url_verification":
       return s.handle_verification(requestJson)
+
   if request.form:
     requestDict = json.loads(request.form.to_dict().get('payload', None))
 
   if requestDict:
-    # Handle returns from button clicks
+    # Handle triage day selection
     if requestDict.get('callback_id', None) == "signup_dow_selection":
       s.post_ephemeral_message(
-        "Pick a time slot:",
+        "Pick a time slot for {}:".format(requestDict['actions'][0]['name'].capitalize()),
         requestDict.get('user', {}).get('id', ""),
-        attachments=constants.TRIAGE_TIMESLOT_ATTACHMENTS
+        attachments=messages.get_ephemeral_timeslot_attachments(requestDict['actions'][0]['value'])
       )
+      # Should return something to wipe the message
+      # return "None or something"
+    elif requestDict.get('callback_id', None) == "signup_ts_selection":
+      # Add reservation(s) to db and update slack message
+      data_access.save_triage_reservation(requestDict)
+      messages.update_ephemeral(s, requestDict)
+      messages.update_weekly_message(s)
+      # Also return an update to the ephemeral message?
+      return ('',200)
   print("Request.data: {}".format(request.data))
   print("Request.form: {}".format(request.form))
   print("Dict form of Request.form: {}".format(request.form.to_dict()))
   print("Request.get_json(): {}".format(request.get_json()))
 
-  return jsonify({"Answer":"None"})
+  return ('',204)

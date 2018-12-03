@@ -21,22 +21,17 @@ class SlackApi():
     return jsonify({}), 400
 
   def post_message(self, text, **kwargs):
-    targetUrl = "{}{}".format(self.API_BASE, "chat.postMessage")
+    targetUrl = self.__get_api_url("chat.postMessage")
     payload = {
-      'channel': self.CHANNEL_ID,
+      'channel': kwargs.get('channel_id', self.CHANNEL_ID),
       'text': text,
       'as_user': kwargs.get('as_user', False),
       'attachments': kwargs.get('attachments', [])
     }
-    r = requests.post(targetUrl,
-      data=json.dumps(payload),
-      headers={'Content-type': 'application/json',
-               'Authorization': "Bearer {}".format(self.API_TOKEN)}
-    )
-    return r.json()
+    return self.__make_api_request(targetUrl, payload)
 
   def post_ephemeral_message(self, text, target_user_id, **kwargs):
-    targetUrl = "{}{}".format(self.API_BASE, "chat.postEphemeral")
+    targetUrl = kwargs.get('response_url', self.__get_api_url("chat.postEphemeral"))
     payload = {
       'channel': kwargs.get('channel_id', self.CHANNEL_ID),
       'text': text,
@@ -44,9 +39,31 @@ class SlackApi():
       'attachments': kwargs.get('attachments', []),
       'user': target_user_id
     }
-    r = requests.post(targetUrl,
-      data=json.dumps(payload),
+    return self.__make_api_request(targetUrl, payload)
+
+  def update_message(self, text, target_ts, **kwargs):
+    targetUrl = self.__get_api_url("chat.update")
+    payload = {
+      'channel': kwargs.get('channel_id', self.CHANNEL_ID),
+      'text': text,
+      'as_user': kwargs.get('as_user', False),
+      'attachments': kwargs.get('attachments', []),
+      'ts': target_ts
+    }
+    return self.__make_api_request(targetUrl, payload)
+
+  def __make_api_request(self, target_url, payload):
+    if isinstance(payload, dict):
+      payload = json.dumps(payload)
+    elif not isinstance(payload, str):
+      raise TypeError("Expected json string or dict")
+
+    r = requests.post(target_url,
+      data=payload,
       headers={'Content-Type': "application/json",
                'Authorization': "Bearer {}".format(self.API_TOKEN)}
     )
     return r.json()
+
+  def __get_api_url(self, func):
+    return "{}{}".format(self.API_BASE, func)
