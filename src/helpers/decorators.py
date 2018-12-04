@@ -7,6 +7,7 @@ import hmac
 import hashlib
 import urllib.parse
 import json
+import time
 
 def ensure_dict(func):
   def ensure(*args, **kwargs):
@@ -27,6 +28,9 @@ def validate_slack_message(func):
     # Pull request headers
     slackSig = request.headers.get('X-Slack-Signature')
     slackTs = request.headers.get('X-Slack-Request-Timestamp')
+    # No MITM for me
+    if abs(time.time() - float(slackTs)) > 60 * 5:
+      raise ValueError("Slack request timestamp differs by > 5 minutes from local time.")
     # Form basestring
     bs = "{}:{}:{}".format("v0", slackTs, str(request.get_data(), 'utf-8'))
     # Compute signature
