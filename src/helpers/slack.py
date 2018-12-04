@@ -47,9 +47,11 @@ class SlackApi():
       'channel': kwargs.get('channel_id', self.CHANNEL_ID),
       'text': text,
       'as_user': kwargs.get('as_user', False),
-      'attachments': kwargs.get('attachments', []),
       'ts': target_ts
     }
+    if kwargs.get('attachments', None):
+      payload['attachments'] = kwargs.get('attachments')
+
     return self.__make_api_request(targetUrl, payload)
 
   def __make_api_request(self, target_url, payload):

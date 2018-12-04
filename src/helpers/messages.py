@@ -3,6 +3,7 @@ import src.helpers.constants as CONST
 from src.helpers import data_access
 
 import requests
+import copy
 
 def post_weekly_message(slack):
   # Dict of dicts
@@ -39,8 +40,7 @@ def update_weekly_message(slack):
   try:
     r = slack.update_message(
       get_weekly_message(False),
-      data_access.get_target_ts(),
-      attachments=CONST.TRIAGE_WEEKLY_MSG_ATTACHMENTS
+      data_access.get_target_ts()
     )
   except Exception as e:
     print("Failed to update weekly triage message: {}".format(repr(e)))
@@ -50,7 +50,7 @@ def update_weekly_message(slack):
 
 def update_ephemeral(slack, data):
   try:
-    slack.post_ephemeral_message("Thanks for signing up!", data['user']['id'], response_url=data['response_url'], attachments=[])
+    slack.post_ephemeral_message("Sign-up received!", data['user']['id'], response_url=data['response_url'], attachments=[])
   except Exception as e:
     print("Failed to update ephemeral: {}".format(repr(e)))
 
@@ -58,14 +58,16 @@ def update_ephemeral(slack, data):
 def get_weekly_message(initial_message=True):
   reservations = data_access.get_triage_reservations(initial_message)
   msg_values = []
-  for dow in ["m","t","w","h","f"]:
+  for dow in ["mon","tue","wed","thu","fri"]:
     for t in range(1,4):
-      msg_values.extend(reservations[dow][str(t)])
-  return CONST.TRIAGE_WEEKLY_MSG_TEMPLATE.format(*msg_values)
+      tsNames = reservations[dow][str(t)]
+      msg_values.append(",".join(tsNames))
+      #msg_values.extend(reservations[dow][str(t)])
+  weekly_msg_template = copy.deepcopy(CONST.TRIAGE_WEEKLY_MSG_TEMPLATE)
+  return weekly_msg_template.format(*msg_values)
 
 def get_ephemeral_timeslot_attachments(day_of_week):
-  print(day_of_week)
-  tmp = CONST.TRIAGE_TIMESLOT_ATTACHMENTS[0]
+  tmp = copy.deepcopy(CONST.TRIAGE_TIMESLOT_ATTACHMENTS[0])
   for idx,d in enumerate(tmp['actions']):
     tmp['actions'][idx]['name'] = d['name'].format(day_of_week)
   return [tmp]

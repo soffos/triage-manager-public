@@ -11,31 +11,31 @@ TRIAGE_WEEKLY_MSG_ATTACHMENTS = [
         "name": "monday",
         "text": "Monday",
         "type": "button",
-        "value": "m"
+        "value": "mon"
       },
       {
         "name": "tuesday",
         "text": "Tuesday",
         "type": "button",
-        "value": "t"
+        "value": "tue"
       },
       {
         "name": "wednesday",
         "text": "Wednesday",
         "type": "button",
-        "value": "w"
+        "value": "wed"
       },
       {
         "name": "thursday",
         "text": "Thursday",
         "type": "button",
-        "value": "h"
+        "value": "thu"
       },
       {
         "name": "friday",
         "text": "Friday",
         "type": "button",
-        "value": "f"
+        "value": "fri"
       }
     ]
   }

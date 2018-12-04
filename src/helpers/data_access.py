@@ -1,5 +1,7 @@
 from src import db, models
 
+from datetime import datetime
+
 # Returns: 
 # Dict of dicts
 #   each sub-dict has 3 timeslot keys
@@ -23,11 +25,9 @@ def get_triage_reservations(initial_message=True):
     reservations = models.Reservation.query.filter(models.Reservation.target_slack_ts==target_ts).all()
 
   ts=["1","2","3"]
-  days=["m","t","w","h","f"]
+  days=["mon","tue","wed","thu","fri"]
   resTemplate = {d:{t:[] for t in ts} for d in days}
 
-  import pprint;pp=pprint.PrettyPrinter()
-  pp.pprint(resTemplate)
   if not initial_message:
     for r in reservations:
       print("Adding {} to ts {} on day {}".format(r.name, r.timeslot, r.dow))
@@ -37,27 +37,26 @@ def get_triage_reservations(initial_message=True):
     for t,users in ts.items():
       if users==[]:
         resTemplate[d][t]=["?"]
-  pp.pprint(resTemplate)
   return resTemplate
 
 def save_triage_reservation(data):
   reservations = []
   chosen_slot = data['actions'][0]['value']
-  import pprint;pp=pprint.PrettyPrinter()
-  pp.pprint(data)
   for x in range(1, 4):
     if str(x) == chosen_slot or chosen_slot == "4":
       exists = models.Reservation.query.filter(models.Reservation.uid==data['user']['id'],
                                                models.Reservation.timeslot==str(x),
-                                               models.Reservation.dow==data['actions'][0]['name'][0]).first()
+                                               models.Reservation.dow==data['actions'][0]['name'][:3],
+                                               models.Reservation.target_slack_ts==get_target_ts()).first()
       if not exists:
         reservations.append(
           models.Reservation(
             uid=data['user']['id'],
             name=data['user']['name'],
-            dow=data['actions'][0]['name'][0],
+            dow=data['actions'][0]['name'][:3],
             timeslot=str(x),
-            target_slack_ts=get_target_ts()
+            target_slack_ts=get_target_ts(),
+            timestamp=datetime.utcnow()
           )
         )
   for r in reservations:

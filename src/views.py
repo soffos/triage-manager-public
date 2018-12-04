@@ -27,6 +27,7 @@ def main(meth=None):
         requestDict.get('user', {}).get('id', ""),
         attachments=messages.get_ephemeral_timeslot_attachments(requestDict['actions'][0]['value'])
       )
+      return ('',200)
       # Should return something to wipe the message
       # return "None or something"
     elif requestDict.get('callback_id', None) == "signup_ts_selection":

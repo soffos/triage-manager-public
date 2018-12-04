@@ -12,7 +12,7 @@ class Reservation(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   uid = db.Column(db.String(32))
   name = db.Column(db.String(128))
-  dow = db.Column(db.String(1))
+  dow = db.Column(db.String(3))
   timeslot = db.Column(db.String(1))
   target_slack_ts = db.Column(db.String(128))
   timestamp = db.Column(db.DateTime)
