@@ -1,4 +1,12 @@
+from src import app
+
+from flask import request
+from functools import wraps
 import inspect
+import hmac
+import hashlib
+import urllib.parse
+import json
 
 def ensure_dict(func):
   def ensure(*args, **kwargs):
@@ -12,3 +20,20 @@ def ensure_dict(func):
     else:
       return func(*args, **kwargs)
   return ensure
+
+def validate_slack_message(func):
+  @wraps(func)
+  def validate(*args, **kwargs):
+    # Pull request headers
+    slackSig = request.headers.get('X-Slack-Signature')
+    slackTs = request.headers.get('X-Slack-Request-Timestamp')
+    # Form basestring
+    bs = "{}:{}:{}".format("v0", slackTs, str(request.get_data(), 'utf-8'))
+    # Compute signature
+    compSig = "v0={}".format(hmac.new(app.config['SLACK_SIGNING_SECRET'].encode(), msg=bs.encode(), digestmod=hashlib.sha256).hexdigest())
+    # Compare
+    if not hmac.compare_digest(slackSig, compSig):
+      raise ValueError("Slack signature did not match computed signature: bs: {},  {} / {}".format(bs, slackSig, compSig))
+    else:
+      return func(*args, **kwargs)
+  return validate

@@ -1,11 +1,13 @@
 from src import app, db, models
 from src.helpers import slack, constants, messages, data_access
+from src.helpers.decorators import validate_slack_message
 
 from flask import request, Response, jsonify
 import sys
 import json
 
 @app.route("/triagemgmt/<meth>", methods=["POST"])
+@validate_slack_message
 def main(meth=None):
   s = slack.SlackApi()
   requestJson = request.get_json()
