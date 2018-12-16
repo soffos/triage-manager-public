@@ -9,7 +9,6 @@ import logging
 class GoogleApi():
   def __init__(self, **kwargs):
     logging.getLogger('googleapiclient.discovery').setLevel(logging.ERROR)
-    self.API_BASE = kwargs.get('API_BASE', app.config['GCAL_API_BASE'])
     credStore = file.Storage("{}/conf/gcal_token.json".format(app.config['BASEDIR']))
     self.credentials = credStore.get()
 
@@ -26,12 +25,15 @@ class GoogleApi():
         timeMax=time_max
       ).execute()
       for event in events['items']:
-        print(event['summary'])
         ret_events.append(event)
       pageToken = events.get('nextPageToken', None)
       if not pageToken:
         break
     return ret_events
+
+  def update_calendar_event(self, calendar_id, event):
+    service = self._get_authorized_service("calendar")
+    return service.events().update(calendarId=calendar_id, eventId=event['id'], body=event).execute()
 
   def _get_authorized_service(self, target_svc):
     return build(target_svc, 'v3', http=self.credentials.authorize(Http()), cache_discovery=False)
