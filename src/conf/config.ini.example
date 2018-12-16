@@ -1,4 +1,4 @@
-[slack]
+[slack]# Info about slack bot, triage channel
 app_id=
 bot_uid=
 access_token=
@@ -6,10 +6,10 @@ channel_id=
 signing_secret=
 api_base=https://slack.com/api/
 
-[google]
+[google]# Calendar ID on which to operate
 calendar=
 
-[db]
+[db]# DB for storing correlation data - MySQL or MySQL analogues are recommended.
 type=
 port=
 name=
