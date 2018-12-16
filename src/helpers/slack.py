@@ -5,6 +5,7 @@ from flask import jsonify
 
 import requests
 import json
+import urllib
 
 class SlackApi():
   def __init__(self, **kwargs):
@@ -54,17 +55,32 @@ class SlackApi():
 
     return self.__make_api_request(targetUrl, payload)
 
-  def __make_api_request(self, target_url, payload):
-    if isinstance(payload, dict):
+  def get_user_info(self, user_id, **kwargs):
+    targetUrl = self.__get_api_url("users.info")
+    payload = {
+      'user': user_id,
+      'include_locale': kwargs.get('include_local', True)
+    }
+    return self.__make_api_request(targetUrl, payload, True)
+
+  def __make_api_request(self, target_url, payload, url_form_encoded=False):
+    if isinstance(payload, dict) and not url_form_encoded:
       payload = json.dumps(payload)
-    elif not isinstance(payload, str):
+    elif not isinstance(payload, str) and not url_form_encoded:
       raise TypeError("Expected json string or dict")
 
-    r = requests.post(target_url,
-      data=payload,
-      headers={'Content-Type': "application/json",
-               'Authorization': "Bearer {}".format(self.API_TOKEN)}
-    )
+    if url_form_encoded:
+      r = requests.post(target_url,
+        data=urllib.parse.urlencode(payload),
+        headers={'Content-Type': "application/x-www-form-urlencoded",
+                 'Authorization': "Bearer {}".format(self.API_TOKEN)}
+      )
+    else:
+      r = requests.post(target_url,
+        data=payload,
+        headers={'Content-Type': "application/json",
+                 'Authorization': "Bearer {}".format(self.API_TOKEN)}
+      )
     return r.json()
 
   def __get_api_url(self, func):
