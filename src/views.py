@@ -1,5 +1,5 @@
 from src import app, db, models
-from src.helpers import slack, constants, messages, data_access
+from src.helpers import slack, constants, messages, calendar, data_access
 from src.helpers.decorators import validate_slack_message
 
 from flask import request, Response, jsonify
@@ -22,20 +22,33 @@ def main(meth=None):
   if requestDict:
     # Handle triage day selection
     if requestDict.get('callback_id', None) == "signup_dow_selection":
+      messageTs = requestDict.get('message_ts', 0)
       s.post_ephemeral_message(
         "Pick a time slot for {}:".format(requestDict['actions'][0]['name'].capitalize()),
         requestDict.get('user', {}).get('id', ""),
-        attachments=messages.get_ephemeral_timeslot_attachments(requestDict['actions'][0]['value'])
+        attachments=messages.get_ephemeral_timeslot_attachments(requestDict['actions'][0]['value'],messageTs)
       )
       return ('',200)
       # Should return something to wipe the message
       # return "None or something"
     elif requestDict.get('callback_id', None) == "signup_ts_selection":
       # Add reservation(s) to db and update slack message
-      data_access.save_triage_reservation(requestDict)
+      actionContent = requestDict['actions'][0]
+      targetTs = actionContent.get('value', 0)
+      data_access.save_triage_reservation(requestDict, targetTs)
       messages.update_ephemeral(s, requestDict)
-      messages.update_weekly_message(s)
-      # Also return an update to the ephemeral message?
+      messages.update_weekly_message(s, targetTs)
+      # Send calendar invite
+      try:
+        userInfo = s.get_user_info(requestDict['user']['id'])
+        userEmail = userInfo['user']['profile']['email']
+        # Need to ensure ephemeral button 'value' is original message ts for granularity
+        day = actionContent['name'][:3]
+        slot = int(actionContent['name'][-1:])
+        slot = slot - 1 if slot < 4 else None
+        calendar.send_invite_by_epoch_day_slot(userEmail, float(targetTs), day, slot)
+      except Exception as e:
+        print("Failed to send calendar invite: {}".format(repr(e)))
       return ('',200)
   print("Request.data: {}".format(request.data))
   print("Request.form: {}".format(request.form))
