@@ -36,10 +36,10 @@ def post_weekly_message(slack):
   db.session.commit()
   return True
 
-def update_weekly_message(slack):
+def update_weekly_message(slack, target_ts):
   try:
     r = slack.update_message(
-      get_weekly_message(False),
+      get_weekly_message(False, target_ts),
       data_access.get_target_ts()
     )
   except Exception as e:
@@ -55,8 +55,8 @@ def update_ephemeral(slack, data):
     print("Failed to update ephemeral: {}".format(repr(e)))
 
 
-def get_weekly_message(initial_message=True):
-  reservations = data_access.get_triage_reservations(initial_message)
+def get_weekly_message(initial_message=True, target_ts=None):
+  reservations = data_access.get_triage_reservations(initial_message, target_ts)
   msg_values = []
   for dow in ["mon","tue","wed","thu","fri"]:
     for t in range(1,4):
@@ -66,8 +66,9 @@ def get_weekly_message(initial_message=True):
   weekly_msg_template = copy.deepcopy(CONST.TRIAGE_WEEKLY_MSG_TEMPLATE)
   return weekly_msg_template.format(*msg_values)
 
-def get_ephemeral_timeslot_attachments(day_of_week):
+def get_ephemeral_timeslot_attachments(day_of_week, message_ts):
   tmp = copy.deepcopy(CONST.TRIAGE_TIMESLOT_ATTACHMENTS[0])
   for idx,d in enumerate(tmp['actions']):
     tmp['actions'][idx]['name'] = d['name'].format(day_of_week)
+    tmp['actions'][idx]['value'] = str(message_ts)
   return [tmp]
