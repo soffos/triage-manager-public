@@ -13,7 +13,7 @@ class GoogleApi():
     self.credentials = credStore.get()
 
   def list_calendar_events_in_range(self, time_min, time_max):
-    service = self._get_authorized_service("calendar")
+    service = self.__get_authorized_service("calendar")
     pageToken = None
     ret_events = []
     while True:
@@ -32,8 +32,8 @@ class GoogleApi():
     return ret_events
 
   def update_calendar_event(self, calendar_id, event):
-    service = self._get_authorized_service("calendar")
+    service = self.__get_authorized_service("calendar")
     return service.events().update(calendarId=calendar_id, eventId=event['id'], body=event).execute()
 
-  def _get_authorized_service(self, target_svc):
+  def __get_authorized_service(self, target_svc):
     return build(target_svc, 'v3', http=self.credentials.authorize(Http()), cache_discovery=False)
