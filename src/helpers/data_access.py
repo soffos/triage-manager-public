@@ -19,10 +19,11 @@ from datetime import datetime
 #    },
 #    ...
 # }
-def get_triage_reservations(initial_message=True):
+def get_triage_reservations(initial_message=True, target_ts=None):
   if not initial_message:
-    target_ts = get_target_ts()
-    reservations = models.Reservation.query.filter(models.Reservation.target_slack_ts==target_ts).all()
+    if target_ts is None:
+      target_ts = get_target_ts()
+    reservations = models.Reservation.query.filter(models.Reservation.target_slack_ts==str(target_ts)).all()
 
   ts=["1","2","3"]
   days=["mon","tue","wed","thu","fri"]
@@ -39,23 +40,26 @@ def get_triage_reservations(initial_message=True):
         resTemplate[d][t]=["?"]
   return resTemplate
 
-def save_triage_reservation(data):
+def save_triage_reservation(data, message_ts):
+  print(message_ts)
   reservations = []
-  chosen_slot = data['actions'][0]['value']
+  chosen_slot = data['actions'][0]['name'][-1:]
   for x in range(1, 4):
     if str(x) == chosen_slot or chosen_slot == "4":
       exists = models.Reservation.query.filter(models.Reservation.uid==data['user']['id'],
                                                models.Reservation.timeslot==str(x),
                                                models.Reservation.dow==data['actions'][0]['name'][:3],
-                                               models.Reservation.target_slack_ts==get_target_ts()).first()
+                                               models.Reservation.target_slack_ts==str(message_ts)).first()
+      print(exists)
       if not exists:
+        print("Here with message_ts: {}".format(message_ts))
         reservations.append(
           models.Reservation(
             uid=data['user']['id'],
             name=data['user']['name'],
             dow=data['actions'][0]['name'][:3],
             timeslot=str(x),
-            target_slack_ts=get_target_ts(),
+            target_slack_ts=str(message_ts),
             timestamp=datetime.utcnow()
           )
         )
