@@ -26,6 +26,11 @@ class Config(object):
     print("Error importing Slack configuration: {}".format(repr(e)))
 
   try:
+    GCAL_CALENDAR_ID = config.get("google", 'calendar')
+  except Exception as e:
+    print("Error importing Google Calendar configuration: {}".format(repr(e)))
+
+  try:
     DB_TYPE = config.get("db", 'type')
     DB_USER = config.get("db", 'user')
     DB_PASS = config.get("db", 'pass')
