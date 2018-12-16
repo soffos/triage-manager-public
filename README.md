@@ -24,6 +24,12 @@ virtualenv venv
 pip install -r requirements.txt
 ```
 
+Bootstrap the DB:
+```
+. venv/bin/activate
+./db_create.py
+```
+
 For the app to function to its fullest, Google API credentials are required. Run the below commands and follow the authorization flow:
 ```
 . venv/bin/activate
