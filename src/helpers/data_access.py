@@ -31,7 +31,6 @@ def get_triage_reservations(initial_message=True, target_ts=None):
 
   if not initial_message:
     for r in reservations:
-      print("Adding {} to ts {} on day {}".format(r.name, r.timeslot, r.dow))
       resTemplate[r.dow][r.timeslot].append(r.name)
 
   for d,ts in resTemplate.items():
@@ -41,7 +40,6 @@ def get_triage_reservations(initial_message=True, target_ts=None):
   return resTemplate
 
 def save_triage_reservation(data, message_ts):
-  print(message_ts)
   reservations = []
   chosen_slot = data['actions'][0]['name'][-1:]
   for x in range(1, 4):
@@ -50,9 +48,7 @@ def save_triage_reservation(data, message_ts):
                                                models.Reservation.timeslot==str(x),
                                                models.Reservation.dow==data['actions'][0]['name'][:3],
                                                models.Reservation.target_slack_ts==str(message_ts)).first()
-      print(exists)
       if not exists:
-        print("Here with message_ts: {}".format(message_ts))
         reservations.append(
           models.Reservation(
             uid=data['user']['id'],
