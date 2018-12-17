@@ -64,23 +64,24 @@ class SlackApi():
     return self.__make_api_request(targetUrl, payload, True)
 
   def __make_api_request(self, target_url, payload, url_form_encoded=False):
-    if isinstance(payload, dict) and not url_form_encoded:
-      payload = json.dumps(payload)
-    elif not isinstance(payload, str) and not url_form_encoded:
+    if isinstance(payload, dict):
+      if url_form_encoded:
+        payload = urllib.parse.urlencode(payload)
+      else:
+        payload = json.dumps(payload)
+    elif not isinstance(payload, str):
       raise TypeError("Expected json string or dict")
 
     if url_form_encoded:
-      r = requests.post(target_url,
-        data=urllib.parse.urlencode(payload),
-        headers={'Content-Type': "application/x-www-form-urlencoded",
-                 'Authorization': "Bearer {}".format(self.API_TOKEN)}
-      )
+      headers={'Content-Type': "application/x-www-form-urlencoded"}
     else:
-      r = requests.post(target_url,
-        data=payload,
-        headers={'Content-Type': "application/json",
-                 'Authorization': "Bearer {}".format(self.API_TOKEN)}
-      )
+      headers={'Content-Type': "application/json"}
+    headers['Authorization'] = "Bearer {}".format(self.API_TOKEN)
+
+    r = requests.post(target_url,
+      data=payload,
+      headers=headers
+    )
     return r.json()
 
   def __get_api_url(self, func):
