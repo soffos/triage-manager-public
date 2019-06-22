@@ -77,7 +77,7 @@ class SlackApi():
     else:
       headers={'Content-Type': "application/json"}
     headers['Authorization'] = "Bearer {}".format(self.API_TOKEN)
-
+    print(headers)
     r = requests.post(target_url,
       data=payload,
       headers=headers

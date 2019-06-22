@@ -30,6 +30,9 @@ def post_weekly_message(slack):
   except Exception as e:
     print("Failed to post weekly triage message: {}".format(repr(e)))
     return False
+  import pprint
+  pp = pprint.PrettyPrinter()
+  pp.pprint(r)
   # Save ts to db for later updates
   newMessage = models.Messages(slack_ts=r.get('ts', ""))
   db.session.add(newMessage)
@@ -65,6 +68,17 @@ def get_weekly_message(initial_message=True, target_ts=None):
       #msg_values.extend(reservations[dow][str(t)])
   weekly_msg_template = copy.deepcopy(CONST.TRIAGE_WEEKLY_MSG_TEMPLATE)
   return weekly_msg_template.format(*msg_values)
+
+#def get_weekly_message(initial_message=True, target_ts=None):
+#  reservations = data_access.get_triage_reservations(initial_message, target_ts)
+#  msg_values = []
+#  for dow in ["tue","wed","thu","fri"]:
+#    for t in range(1,4):
+#      tsNames = reservations[dow][str(t)]
+#      msg_values.append(",".join(tsNames))
+#      #msg_values.extend(reservations[dow][str(t)])
+#  weekly_msg_template = copy.deepcopy(CONST.TRIAGE_WEEKLY_MSG_TEMPLATE)
+#  return weekly_msg_template.format(*msg_values)
 
 def get_ephemeral_timeslot_attachments(day_of_week, message_ts):
   tmp = copy.deepcopy(CONST.TRIAGE_TIMESLOT_ATTACHMENTS[0])

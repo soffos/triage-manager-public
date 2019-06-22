@@ -35,3 +35,12 @@ class Messages(db.Model):
   __tablename__ = "triagemgmt_messages"
   id = db.Column(db.Integer, primary_key=True)
   slack_ts = db.Column(db.String(128))
+
+class Metadata(db.Model):
+  __tablename__ = 'triagemgmt_metadata'
+  id = db.Column(db.Integer, primary_key=True)
+  channel_id = db.Column(db.String(32))
+  app_id = db.Column(db.String(32))
+  bot_id = db.Column(db.String(32))
+  calendar_id = db.Column(db.String(128))
+  api_base = db.Column(db.String(128))
