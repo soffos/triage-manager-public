@@ -53,10 +53,9 @@ def update_weekly_message(slack, target_ts):
 
 def update_ephemeral(slack, data):
   try:
-    slack.post_ephemeral_message("Sign-up received!", data['user']['id'], response_url=data['response_url'], attachments=[])
+    slack.post_ephemeral_message("Schedule updated!", data['user']['id'], response_url=data['response_url'], attachments=[])
   except Exception as e:
     print("Failed to update ephemeral: {}".format(repr(e)))
-
 
 def get_weekly_message(initial_message=True, target_ts=None):
   reservations = data_access.get_triage_reservations(initial_message, target_ts)

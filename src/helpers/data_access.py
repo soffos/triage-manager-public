@@ -40,27 +40,34 @@ def get_triage_reservations(initial_message=True, target_ts=None):
   return resTemplate
 
 def save_triage_reservation(data, message_ts):
-  reservations = []
   chosen_slot = data['actions'][0]['name'][-1:]
-  for x in range(1, 4):
-    if str(x) == chosen_slot or chosen_slot == "4":
-      exists = models.Reservation.query.filter(models.Reservation.uid==data['user']['id'],
-                                               models.Reservation.timeslot==str(x),
-                                               models.Reservation.dow==data['actions'][0]['name'][:3],
-                                               models.Reservation.target_slack_ts==str(message_ts)).first()
-      if not exists:
-        reservations.append(
-          models.Reservation(
-            uid=data['user']['id'],
-            name=data['user']['name'],
-            dow=data['actions'][0]['name'][:3],
-            timeslot=str(x),
-            target_slack_ts=str(message_ts),
-            timestamp=datetime.utcnow()
+  if chosen_slot == "5":
+    exists = models.Reservation.query.filter(models.Reservation.uid==data['user']['id'],
+                                             models.Reservation.dow==data['actions'][0]['name'][:3],
+                                             models.Reservation.target_slack_ts==str(message_ts))
+    if exists:
+      exists.delete()
+  else:
+    reservations = []
+    for x in range(1, 4):
+      if str(x) == chosen_slot or chosen_slot == "4":
+        exists = models.Reservation.query.filter(models.Reservation.uid==data['user']['id'],
+                                                 models.Reservation.timeslot==str(x),
+                                                 models.Reservation.dow==data['actions'][0]['name'][:3],
+                                                 models.Reservation.target_slack_ts==str(message_ts)).first()
+        if not exists:
+          reservations.append(
+            models.Reservation(
+              uid=data['user']['id'],
+              name=data['user']['name'],
+              dow=data['actions'][0]['name'][:3],
+              timeslot=str(x),
+              target_slack_ts=str(message_ts),
+              timestamp=datetime.utcnow()
+            )
           )
-        )
-  for r in reservations:
-    db.session.add(r)
+    for r in reservations:
+      db.session.add(r)
   db.session.commit()
 
 def get_target_ts():

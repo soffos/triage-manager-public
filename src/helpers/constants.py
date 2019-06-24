@@ -107,6 +107,13 @@ TRIAGE_TIMESLOT_ATTACHMENTS = [
         "text": "All blocks",
         "type": "button",
         "value": "4",
+      },
+      {
+        "name": "{}5",
+        "text": "Remove me",
+        "type": "button",
+        "style": "danger",
+        "value": "5"
       }
     ]
   }
