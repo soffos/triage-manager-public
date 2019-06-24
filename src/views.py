@@ -45,8 +45,11 @@ def main(meth=None):
         # Need to ensure ephemeral button 'value' is original message ts for granularity
         day = actionContent['name'][:3]
         slot = int(actionContent['name'][-1:])
-        slot = slot - 1 if slot < 4 else None
-        calendar.send_invite_by_epoch_day_slot(userEmail, float(targetTs), day, slot)
+        if slot == 5:
+          calendar.remove_invitation_by_epoch_day_slot(userEmail, float(targetTs), day, None)
+        else:
+          slot = slot - 1 if slot < 4 else None
+          calendar.send_invite_by_epoch_day_slot(userEmail, float(targetTs), day, slot)
       except Exception as e:
         print("Failed to send calendar invite: {}".format(repr(e)))
       return ('',200)

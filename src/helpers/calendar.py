@@ -29,6 +29,36 @@ def send_invite_by_epoch_day_slot(email, epoch, day, slot=None):
   updatedEvent = gapi.update_calendar_event(app.config['GCAL_CALENDAR_ID'], targetEvent)
   return updatedEvent
 
+def remove_invitation_by_epoch_day_slot(email, epoch, day, slot=None):
+  gapi = GoogleApi()
+  # First need to retrieve events
+  allEvents = get_gcal_events_by_epoch(epoch)
+  allEvents = sort_events_by_start_date(allEvents)
+  # Then determine target slot
+  dow = ["mon","tue","wed","thu","fri"]
+  dayIdx = dow.index(day.lower())
+  relEvents = allEvents[dayIdx*4:dayIdx*4+4]
+  for idx,event in enumerate(relEvents):
+    if get_event_length_hours(event) > 1:
+      popIdx = idx
+      break
+  p = relEvents.pop(popIdx)
+  relEvents.append(p)
+  # Finally delete attendee
+  for eventIdx,event in enumerate(relEvents):
+    targetEvent = relEvents[eventIdx]
+    currAttendees = targetEvent.get('attendees', [])
+    deleteIdx = None
+    for idx,attend in enumerate(currAttendees):
+      eml = attend.get('email', None)
+      if eml is not None:
+        deleteIdx = idx
+    if deleteIdx is not None:
+      currAttendees.pop(deleteIdx)
+      targetEvent['attendees'] = currAttendees
+      updatedEvent = gapi.update_calendar_event(app.config['GCAL_CALENDAR_ID'], targetEvent)
+  return True
+
 def sort_events_by_start_date(events):
   retEvents = []
   sortList = []
