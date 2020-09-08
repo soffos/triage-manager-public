@@ -59,3 +59,12 @@ def main(meth=None):
   print("Request.get_json(): {}".format(request.get_json()))
 
   return ('',204)
+
+@app.route('/', methods=['GET','POST'])
+def index():
+  print("Received invalid request: /")
+  return ('',500)
+@app.route('/<path:path>', methods=['GET', 'POST'])
+def catch_all(path):
+  print("Received invalid request: {}".format(str(path)))
+  return ('',500)

@@ -11,6 +11,7 @@ class GoogleApi():
     logging.getLogger('googleapiclient.discovery').setLevel(logging.ERROR)
     credStore = file.Storage("{}/conf/gcal_token.json".format(app.config['BASEDIR']))
     self.credentials = credStore.get()
+    print("Set credentials to {}".format(self.credentials))
 
   def list_calendar_events_in_range(self, time_min, time_max):
     service = self.__get_authorized_service("calendar")

@@ -24,10 +24,16 @@ def send_invite_by_epoch_day_slot(email, epoch, day, slot=None):
   # Finally send invite
   targetEvent = relEvents[slot]
   currAttendees = targetEvent.get('attendees', [])
-  currAttendees.append({'email': email})
-  targetEvent['attendees'] = currAttendees
-  updatedEvent = gapi.update_calendar_event(app.config['GCAL_CALENDAR_ID'], targetEvent)
-  return updatedEvent
+  attendeeExists = False
+  for existing in currAttendees:
+    if existing.get('email', '') == email:
+      attendeeExists = True
+  if not attendeeExists:
+    currAttendees.append({'email': email})
+    targetEvent['attendees'] = currAttendees
+    updatedEvent = gapi.update_calendar_event(app.config['GCAL_CALENDAR_ID'], targetEvent)
+    return updatedEvent
+  return targetEvent
 
 def remove_invitation_by_epoch_day_slot(email, epoch, day, slot=None):
   gapi = GoogleApi()
