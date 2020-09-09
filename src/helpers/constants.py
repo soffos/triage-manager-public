@@ -2,7 +2,7 @@ TRIAGE_WEEKLY_MSG_TEMPLATE = "<!here> If you have the cycles, please sign up for
 TRIAGE_LEADERBOARD_TEMPLATE_HEADERS = "Name|Hrs/Wk|Total"
 TRIAGE_LEADERBOARD_TEMPLATE = "{}|{}|{}"
 TRIAGE_WEEKLY_MSG_ATTACHMENTS_BLOCK = [
-  {
+  { "color": "#3AA3E3",
     "blocks": [
       {
         "type": "section",
