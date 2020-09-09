@@ -27,6 +27,13 @@ class SlackApi():
       'channel': kwargs.get('channel_id', self.CHANNEL_ID),
       'text': text,
       'as_user': kwargs.get('as_user', False),
+      'blocks': kwargs.get('blocks', [{
+        "type": "section",
+        "text": {
+          "type": "mrkdwn",
+          "text": text
+        }
+      }]),
       'attachments': kwargs.get('attachments', [])
     }
     return self.__make_api_request(targetUrl, payload)
@@ -37,6 +44,13 @@ class SlackApi():
       'channel': kwargs.get('channel_id', self.CHANNEL_ID),
       'text': text,
       'as_user': kwargs.get('as_user', False),
+      'blocks': kwargs.get('blocks', [{
+        "type": "section",
+        "text": {
+          "type": "mrkdwn",
+          "text": text
+        }
+      }]),
       'attachments': kwargs.get('attachments', []),
       'user': target_user_id
     }
@@ -47,11 +61,20 @@ class SlackApi():
     payload = {
       'channel': kwargs.get('channel_id', self.CHANNEL_ID),
       'text': text,
+      'blocks': kwargs.get('blocks', [{
+        "type": "section",
+        "text": {
+          "type": "mrkdwn",
+          "text": text
+        }
+      }]),
       'as_user': kwargs.get('as_user', False),
       'ts': target_ts
     }
     if kwargs.get('attachments', None):
       payload['attachments'] = kwargs.get('attachments')
+    if kwargs.get('blocks', None):
+      payload['blocks'] = kwargs.get('blocks')
 
     return self.__make_api_request(targetUrl, payload)
 

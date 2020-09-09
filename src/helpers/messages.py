@@ -25,7 +25,7 @@ def post_weekly_message(slack):
   try:
     r = slack.post_message(
       get_weekly_message(),
-      attachments=CONST.TRIAGE_WEEKLY_MSG_ATTACHMENTS
+      attachments=CONST.TRIAGE_WEEKLY_MSG_ATTACHMENTS_BLOCK
     )
   except Exception as e:
     print("Failed to post weekly triage message: {}".format(repr(e)))

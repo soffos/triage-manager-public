@@ -1,5 +1,5 @@
 from src import app, db, models
-from src.helpers import slack, constants, messages, calendar, data_access
+from src.helpers import slack, constants, messages, calendar, data_access, reporting
 from src.helpers.decorators import validate_slack_message
 
 from flask import request, Response, jsonify
@@ -17,7 +17,7 @@ def main(meth=None):
       return s.handle_verification(requestJson)
 
   if request.form:
-    requestDict = json.loads(request.form.to_dict().get('payload', None))
+    requestDict = json.loads(request.form.to_dict().get('payload', request.form.to_dict()))
 
   if requestDict:
     # Handle triage day selection
@@ -53,6 +53,22 @@ def main(meth=None):
       except Exception as e:
         print("Failed to send calendar invite: {}".format(repr(e)))
       return ('',200)
+    elif requestDict.get('type', "") == "block_actions":
+      #import pprint;pprint.PrettyPrinter().pprint(requestDict);
+      messageTs = requestDict['message']['ts']
+      if requestDict.get('actions', [{}])[0].get('value', "") == "rep":
+        s.post_ephemeral_message(
+          "Check out these leaders:\n{}".format(reporting.run_participation_report()),
+          requestDict.get('user', {}).get('id', "")
+        )
+      else:
+        s.post_ephemeral_message(
+          "Pick a time slot for {}:".format(requestDict['user']['name'].capitalize()),
+          requestDict.get('user', {}).get('id', ""),
+          attachments=messages.get_ephemeral_timeslot_attachments(requestDict['actions'][0]['value'],messageTs)
+        )
+      return ('',200)
+    print("requestDict:");print(requestDict)
   print("Request.data: {}".format(request.data))
   print("Request.form: {}".format(request.form))
   print("Dict form of Request.form: {}".format(request.form.to_dict()))

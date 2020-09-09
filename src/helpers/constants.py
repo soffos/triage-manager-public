@@ -1,4 +1,80 @@
-TRIAGE_WEEKLY_MSG_TEMPLATE = "<!here> If you have the cycles, please sign up for a triage block or two for next week. Each day comprises three one-hour triage blocks from 12:00 - 3:00 PM, with a target of double coverage for every triage block.\nWhen starting your triage block, remember to set notifications on the <#C0L7DC8Q6|triage_tickets> channel so you will be notified as cases come in.\nG Site: https://sites.google.com/tanium.com/tts/operations/triage \nCurrent schedule:```M - {} | {} | {}\nT - {} | {} | {}\nW - {} | {} | {}\nH - {} | {} | {}\nF - {} | {} | {}```"
+TRIAGE_WEEKLY_MSG_TEMPLATE = "<!here> If you have the cycles, please sign up for a triage block or two for next week. Each day's shift comprises three one-hour triage blocks from 12:00 - 3:00 PM. We need _at least_ double coverage for each block in order to ensure we consistently meet our SLAs.\nWhen starting your triage block, remember to set notifications on the <#C0L7DC8Q6|triage_tickets> channel so you will be notified as cases come in.\n<https://sites.google.com/tanium.com/tts/operations/triage|Triage G Site> | <#C0L7DC8Q6|triage_tickets> | <#C9MU2B4BA|triage_tickets-chat>\nCurrent schedule:```M - {} | {} | {}\nT - {} | {} | {}\nW - {} | {} | {}\nH - {} | {} | {}\nF - {} | {} | {}```"
+TRIAGE_LEADERBOARD_TEMPLATE_HEADERS = "Name|Hrs/Wk|Total"
+TRIAGE_LEADERBOARD_TEMPLATE = "{}|{}|{}"
+TRIAGE_WEEKLY_MSG_ATTACHMENTS_BLOCK = [
+  {
+    "blocks": [
+      {
+        "type": "section",
+        "text": {
+          "type": "mrkdwn",
+          "text": "*Choose a day or three*"
+        }
+      },
+      {
+        "type": "actions",
+        "block_id": "signup_dow_selection",
+        "elements": [
+          {
+            "type": "button",
+            "text": {
+              "type": "plain_text",
+              "text": "Monday",
+              "emoji": True
+            },
+            "value": "mon"
+          },
+          {
+            "type": "button",
+            "text": {
+              "type": "plain_text",
+              "text": "Tuesday",
+              "emoji": True
+            },
+            "value": "tue"
+          },
+          {
+            "type": "button",
+            "text": {
+              "type": "plain_text",
+              "text": "Wednesday",
+              "emoji": True
+            },
+            "value": "wed"
+          },
+          {
+            "type": "button",
+            "text": {
+              "type": "plain_text",
+              "text": "Thursday",
+              "emoji": True
+            },
+            "value": "thu"
+          },
+          {
+            "type": "button",
+            "text": {
+              "type": "plain_text",
+              "text": "Friday",
+              "emoji": True
+            },
+            "value": "fri"
+          },
+          {
+            "type": "button",
+            "style": "primary",
+            "text": {
+              "type": "plain_text",
+              "text": "Leaderboard",
+              "emoji": True
+            },
+            "value": "rep",
+          }
+        ]
+      }
+    ]
+  }
+]
 TRIAGE_WEEKLY_MSG_ATTACHMENTS = [
   {
     "fallback": "Choose a day or three",
@@ -36,6 +112,13 @@ TRIAGE_WEEKLY_MSG_ATTACHMENTS = [
         "text": "Friday",
         "type": "button",
         "value": "fri"
+      },
+      {
+        "name": "report",
+        "text": "Leaderboard",
+        "type": "button",
+        "value": "rep",
+        "style": "primary"
       }
     ]
   }
