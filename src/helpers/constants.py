@@ -1,5 +1,5 @@
 TRIAGE_WEEKLY_MSG_TEMPLATE = "<!here> If you have the cycles, please sign up for a triage block or two for next week. Each day's shift comprises three one-hour triage blocks from 12:00 - 3:00 PM. We need _at least_ double coverage for each block in order to ensure we consistently meet our SLAs.\nWhen starting your triage block, remember to set notifications on the <#C0L7DC8Q6|triage_tickets> channel so you will be notified as cases come in.\n<https://sites.google.com/tanium.com/tts/operations/triage|Triage G Site> | <#C0L7DC8Q6|triage_tickets> | <#C9MU2B4BA|triage_tickets-chat>\nCurrent schedule:```M - {} | {} | {}\nT - {} | {} | {}\nW - {} | {} | {}\nH - {} | {} | {}\nF - {} | {} | {}```"
-TRIAGE_LEADERBOARD_TEMPLATE_HEADERS = "Name|Hrs/Wk|Total"
+TRIAGE_LEADERBOARD_TEMPLATE_HEADERS = " |Avg Hrs/Wk|Total"
 TRIAGE_LEADERBOARD_TEMPLATE = "{}|{}|{}"
 TRIAGE_WEEKLY_MSG_ATTACHMENTS_BLOCK = [
   { "color": "#3AA3E3",
