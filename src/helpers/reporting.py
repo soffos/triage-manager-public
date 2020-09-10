@@ -88,7 +88,7 @@ def run_participation_report():
   nrmlHeaders = "|".join([paddingNum.format(x) for x in nrmlHeaders.split('|')])
   nrmlHeaders = nrmlHeaders[:nrmlHeaders.find('|')] + " " + nrmlHeaders[nrmlHeaders.find('|')+1:]
 
-  if outMsg== "":
+  if outMsg.strip() == "":
     return "_*No one qualified.*_"
   else:
     return "```" + nrmlHeaders + "\n" + outMsg + "```"
