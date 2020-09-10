@@ -12,7 +12,9 @@ def get_participation_dict(time_range=None):
   pDict = {}
   # Get all rows based on time_range
   if time_range is None:
-    reservRows = Reservation.query.order_by(Reservation.target_slack_ts.asc())
+    # If no specified range, grab last 13 rosters
+    tgtTsList = Reservation.query.order_by(Reservation.target_slack_ts.desc()).with_entities(Reservation.target_slack_ts).distinct()[-13:]
+    reservRows = Reservation.query.filter(Reservation.target_slack_ts.in_([str(t.target_slack_ts) for t in tgtTsList])).order_by(Reservation.target_slack_ts.desc())
   else:
     start_ts, end_ts = (str(datetime_to_epoch(time_range[0])), str(datetime_to_epoch(time_range[1])))
     reservRows = Reservation.query.filter((Reservation.target_slack_ts >= start_ts) & (Reservation.target_slack_ts <= end_ts)).order_by(Reservation.target_slack_ts.asc())
@@ -53,15 +55,16 @@ def run_participation_report():
   # How many times a user must participate per week
   participTargetRatio = 2.0
   tgtUsers = []
-  tgtRange = (datetime.datetime.now() - datetime.timedelta(days=90), datetime.datetime.now())
-  
+  tgtRange = None#(datetime.datetime.now() - datetime.timedelta(days=90), datetime.datetime.now())
+ 
+  paddingAlpha = "{}"; paddingNum = "{}"; 
   reportListified = []
   report = create_participation_report(participTargetRatio, time_range=tgtRange, users=tgtUsers)
   for k,v in report.items():
     rO = v; rO['name'] = k
     reportListified.append(rO)
   outMsg = ""
-  nrmlLn = 8
+  nrmlLn = 13#8
   highTot = 0
   highAvg = 0
   for o in reportListified:
@@ -71,19 +74,21 @@ def run_participation_report():
   for obj in sorted(reportListified, key= lambda i: i['total']):
     if obj['average'] < participTargetRatio:
       continue
-    padding = "{:<" + str(nrmlLn) + "}"
-    objName = padding.format(obj.get('name', "Error"))
+    paddingAlpha = "{:<" + str(nrmlLn) + "}"
+    paddingNum = "{:^" + str(nrmlLn) + "s}"
+    objName = paddingAlpha.format(obj.get('name', "Error"))
     objAvgNum = obj.get('average', 0)
-    objAvg = padding.format(str(objAvgNum))
+    objAvg = paddingNum.format("{:.2f}".format(objAvgNum))
     objTotNum = obj.get('total', 0)
-    objTot = padding.format(str(objTotNum))
-    if objAvgNum == highAvg:
-      objAvgPts = objAvg.split(str(objAvgNum))
-      objAvg = objAvgPts[0] + str(objAvgNum) + "*" + objAvgPts[1][:-1]
-    if objTotNum == highTot:
-      objTotPts = objTot.split(str(objTotNum))
-      objTot = objTotPts[0] + str(objTotNum) + "*" + objTotPts[1][:-1]
+    objTot = paddingNum.format(str(objTotNum))
+
     outMsg += constants.TRIAGE_LEADERBOARD_TEMPLATE.format(objName, objAvg, objTot) + "\n"
+
   nrmlHeaders = constants.TRIAGE_LEADERBOARD_TEMPLATE_HEADERS
-  nrmlHeaders = "|".join([padding.format(x) for x in nrmlHeaders.split('|')])
-  return "```" + nrmlHeaders + "\n" + outMsg + "```"
+  nrmlHeaders = "|".join([paddingNum.format(x) for x in nrmlHeaders.split('|')])
+  nrmlHeaders = nrmlHeaders[:nrmlHeaders.find('|')] + " " + nrmlHeaders[nrmlHeaders.find('|')+1:]
+
+  if outMsg== "":
+    return "_*No one qualified.*_"
+  else:
+    return "```" + nrmlHeaders + "\n" + outMsg + "```"
