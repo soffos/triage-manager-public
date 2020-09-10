@@ -13,7 +13,7 @@ def get_participation_dict(time_range=None):
   # Get all rows based on time_range
   if time_range is None:
     # If no specified range, grab last 13 rosters
-    tgtTsList = Reservation.query.order_by(Reservation.target_slack_ts.desc()).with_entities(Reservation.target_slack_ts).distinct()[-13:]
+    tgtTsList = Reservation.query.order_by(Reservation.target_slack_ts.asc()).with_entities(Reservation.target_slack_ts).distinct()[-13:]
     reservRows = Reservation.query.filter(Reservation.target_slack_ts.in_([str(t.target_slack_ts) for t in tgtTsList])).order_by(Reservation.target_slack_ts.desc())
   else:
     start_ts, end_ts = (str(datetime_to_epoch(time_range[0])), str(datetime_to_epoch(time_range[1])))
@@ -35,7 +35,7 @@ def create_participation_report(target_ratio, time_range=None, users=[], include
   # Calculate average participation slots per week for each user
   totalWeeks = len(pDict.keys())
   if totalWeeks != 0:
-    for user in usersDict:
+    for user in usersDict.keys():
       avg = 0
       for ts, userDict in pDict.items():
         numHrs = len(userDict.get(user, []))
@@ -69,9 +69,7 @@ def run_participation_report():
   highAvg = 0
   for o in reportListified:
     nrmlLn = nrmlLn if len(o['name'])+2 <= nrmlLn else len(o['name'])+2
-    highTot = highTot if o['total'] <= highTot else o['total']
-    highAvg = highAvg if o['average'] <= highAvg else o['average']
-  for obj in sorted(reportListified, key= lambda i: i['total']):
+  for obj in sorted(reportListified, key= lambda i: i['total'], reverse=True):
     if obj['average'] < participTargetRatio:
       continue
     paddingAlpha = "{:<" + str(nrmlLn) + "}"
