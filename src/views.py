@@ -58,7 +58,7 @@ def main(meth=None):
       messageTs = requestDict['message']['ts']
       if requestDict.get('actions', [{}])[0].get('value', "") == "rep":
         s.post_ephemeral_message(
-          "Check out these leaders:\n{}".format(reporting.run_participation_report()),
+          "Check out our leading triagers!\n{}\n>`Leaderboard captures 13 most recent triage rosters`".format(reporting.run_participation_report()),
           requestDict.get('user', {}).get('id', "")
         )
       else:
