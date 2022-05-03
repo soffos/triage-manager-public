@@ -15,10 +15,15 @@ def send_invite_by_epoch_day_slot(email, epoch, day, slot=None):
   dow = ["mon","tue","wed","thu","fri"]
   dayIdx = dow.index(day.lower())
   relEvents = allEvents[dayIdx*4:dayIdx*4+4]
+  popIdx = None
   for idx,event in enumerate(relEvents):
     if get_event_length_hours(event) > 1:
       popIdx = idx
       break
+
+  if popIdx is None:
+    print("Error identifying time slot, allEvents: {} relEvents: {}".format(allEvents, relEvents))
+    return false
   p = relEvents.pop(popIdx)
   relEvents.append(p)
   # Finally send invite
