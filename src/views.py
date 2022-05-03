@@ -25,7 +25,7 @@ def handle_make_reservation(slack, data):
   messages.update_weekly_message(slack, targetTs)
   data['targetTs'] = targetTs
   # Send calendar invite
-  handle_send_calendar_invite(s, data, actionContent)
+  handle_send_calendar_invite(slack, data, actionContent)
   return ('',200)
 
 def handle_send_calendar_invite(slack, data, meta):
